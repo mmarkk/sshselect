@@ -4,14 +4,16 @@ SSH Select is a simple command-line tool written in Go that allows users to easi
 
 ## Features
 
--   Presents a numbered list of available SSH connections to the user
--   Allows the user to select a connection by entering its number
+-   Displays a list of available SSH connections with server names
+-   Supports selection using both arrow keys and number input
+-   Allows searching through the list of servers
 -   Executes the selected SSH command
 
 ## Requirements
 
--   Go 1.x or higher
+-   Go 1.21.8 or higher
 -   Make (for easy installation)
+-   github.com/manifoldco/promptui v0.9.0 (automatically installed when using `go mod tidy`)
 
 ## Installation
 
@@ -25,13 +27,13 @@ SSH Select is a simple command-line tool written in Go that allows users to easi
     ```
     cd sshselect
     ```
-3. Build and install the executable:
+3. Download dependencies and build the executable:
 
     ```
     make install
     ```
 
-    This will compile the program and install it to `~/bin/sshselect`.
+    This will run `go mod tidy`, compile the program, and install it to `~/bin/sshselect`.
 
 4. Ensure `~/bin` is in your PATH. Add the following line to your shell configuration file (e.g., `.bashrc`, `.zshrc`):
     ```
@@ -49,11 +51,15 @@ SSH Select is a simple command-line tool written in Go that allows users to easi
     ```
     cd sshselect
     ```
-3. Build the executable:
+3. Download dependencies:
+    ```
+    go mod tidy
+    ```
+4. Build the executable:
     ```
     go build -o sshselect
     ```
-4. (Optional) Move the executable to a directory in your PATH:
+5. (Optional) Move the executable to a directory in your PATH:
     ```
     mv sshselect ~/bin/
     ```
@@ -72,23 +78,39 @@ SSH Select is a simple command-line tool written in Go that allows users to easi
     ./sshselect
     ```
 
-2. You will see a numbered list of available SSH connections. Enter the number of the connection you want to use.
+2. You will see a list of available SSH connections with server names. You can:
 
-3. The program will execute the selected SSH command, connecting you to the chosen server.
+    - Use the up and down arrow keys to navigate through the list
+    - Type a number to quickly select a connection
+    - Start typing to search for a specific server name
+
+3. Press Enter to confirm your selection.
+
+4. The program will execute the selected SSH command, connecting you to the chosen server.
 
 ## Customization
 
-To modify the list of available SSH connections, edit the `logins` slice in the `main` function of the `sshselect.go` file. Add or remove SSH commands as needed, then rebuild and reinstall the program using `make install`.
+To modify the list of available SSH connections, edit the `logins` slice in the `main` function of the `sshselect.go` file. Each entry in the slice should be a `sshLogin` struct with a `Name` and `Command` field. For example:
+
+```go
+logins := []sshLogin{
+    {Name: "Web Server", Command: "ssh user@webserver.example.com"},
+    {Name: "Database", Command: "ssh dbuser@db.example.com -p 2222"},
+    // Add more entries as needed
+}
+```
+
+After making changes, rebuild and reinstall the program using `make install`.
 
 ## Makefile Commands
 
 -   `make build`: Builds the sshselect binary
--   `make install`: Builds and installs the binary to ~/bin
+-   `make install`: Runs `go mod tidy`, builds and installs the binary to ~/bin
 -   `make clean`: Removes the built binary
 
 ## Error Handling
 
--   Invalid user input (e.g., selecting a number that doesn't correspond to a connection) will result in an error message.
+-   Invalid user input will result in an error message.
 -   If there's an error executing the SSH command, the program will exit with an error message.
 
 ## Contributing
