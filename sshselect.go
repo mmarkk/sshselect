@@ -39,10 +39,27 @@ func main() {
 
 	searcher := func(input string, index int) bool {
 		login := logins[index]
-		name := strings.Replace(strings.ToLower(login.Name), " ", "", -1)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+		name := strings.ToLower(strings.TrimSpace(login.Name))
+		input = strings.ToLower(strings.TrimSpace(input))
 
-		return strings.Contains(name, input)
+		if input == "" {
+			return true // Empty input matches everything
+		}
+
+		inputRunes := []rune(input)
+		nameRunes := []rune(name)
+		inputIndex := 0
+
+		for _, nameRune := range nameRunes {
+			if inputIndex < len(inputRunes) && nameRune == inputRunes[inputIndex] {
+				inputIndex++
+			}
+			if inputIndex == len(inputRunes) {
+				return true
+			}
+		}
+
+		return false
 	}
 
 	prompt := promptui.Select{
