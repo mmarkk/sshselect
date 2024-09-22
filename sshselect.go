@@ -2,54 +2,76 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+
+	"github.com/manifoldco/promptui"
 )
 
-// main is the entry point of the program. It presents SSH logins to the user,
-// and executes the selected SSH command.
+type sshLogin struct {
+	Name    string
+	Command string
+}
+
 func main() {
 	// SSH login list
-	logins := []string{
-		"ssh cpwtadm@170.64.185.37",
-		"ssh cpwebadm@170.64.132.151",
-		"ssh mark@170.64.140.130",
-		"ssh outageradm@170.64.134.33",
-		"ssh cpwlapiadm@170.64.217.201",
+	logins := []sshLogin{
+		{Name: "cpwlapiadm", Command: "ssh cpwlapiadm@170.64.217.201"},
+		{Name: "outageradm", Command: "ssh outageradm@170.64.134.33"},
+		{Name: "mark", Command: "ssh mark@170.64.140.130"},
+		{Name: "cpwtadm", Command: "ssh cpwtadm@170.64.185.37"},
+		{Name: "cpwebadm", Command: "ssh cpwebadm@170.64.132.151"},
 	}
 
 	fmt.Println("SSH Login Selector")
 	fmt.Println("------------------")
-	// Present options to the user
-	for i, login := range logins {
-		fmt.Printf("%d. %s\n", i+1, login)
+
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}",
+		Active:   "\u25B6 {{ .Name | cyan }}",
+		Inactive: "  {{ .Name | white }}",
+		Selected: "\u2714 {{ .Name | green }}",
+		Details:  "Command: {{ .Command }}",
 	}
 
-	// Get user selection
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("\nSelect an SSH login (enter the number): ")
-	input, err := reader.ReadString('\n')
+	searcher := func(input string, index int) bool {
+		login := logins[index]
+		name := strings.Replace(strings.ToLower(login.Name), " ", "", -1)
+		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+
+		return strings.Contains(name, input)
+	}
+
+	prompt := promptui.Select{
+		Label:     "Select an SSH login (use arrow keys or type the number):",
+		Items:     logins,
+		Templates: templates,
+		Size:      10,
+		Searcher:  searcher,
+	}
+
+	index, _, err := prompt.Run()
+
 	if err != nil {
-		fmt.Println("Error reading input:", err)
-		os.Exit(1)
+		if err.Error() == "^C" {
+			fmt.Println("\nOperation cancelled")
+			return
+		}
+		// Check if the input is a valid number
+		if num, err := strconv.Atoi(err.Error()); err == nil && num > 0 && num <= len(logins) {
+			index = num - 1
+		} else {
+			fmt.Printf("Error: %v\n", err)
+			os.Exit(1)
+		}
 	}
 
-	// Parse user input
-	choice := strings.TrimSpace(input)
-	index := 0
-	_, err = fmt.Sscanf(choice, "%d", &index)
-	if err != nil || index < 1 || index > len(logins) {
-		fmt.Println("Invalid selection")
-		os.Exit(1)
-	}
-
-	// Execute SSH command
-	selectedLogin := logins[index-1]
-	fmt.Printf("\nConnecting to: %s\n", selectedLogin)
-	sshCommand := strings.Fields(selectedLogin)
+	selectedLogin := logins[index]
+	fmt.Printf("\nConnecting to: %s\n", selectedLogin.Command)
+	sshCommand := strings.Fields(selectedLogin.Command)
 	cmd := exec.Command(sshCommand[0], sshCommand[1:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
