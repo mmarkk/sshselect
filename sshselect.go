@@ -21,6 +21,7 @@ func main() {
 	logins := []sshLogin{
 		{Name: "cpwlapiadm", Command: "ssh cpwlapiadm@170.64.217.201"},
 		{Name: "outageradm", Command: "ssh outageradm@170.64.134.33"},
+		{Name: "briskadm", Command: "ssh briskadm@170.64.172.68"},
 		{Name: "mark", Command: "ssh mark@170.64.140.130"},
 		{Name: "cpwtadm", Command: "ssh cpwtadm@170.64.185.37"},
 		{Name: "cpwebadm", Command: "ssh cpwebadm@170.64.132.151"},
