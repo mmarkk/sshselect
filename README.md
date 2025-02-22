@@ -1,117 +1,109 @@
 # SSH Select
 
-SSH Select is a simple command-line tool written in Go that allows users to easily select and connect to SSH servers from a predefined list.
+SSH Select is a simple command-line tool written in Go that allows users to easily select and connect to SSH servers using a standard SSH config format.
 
 ## Features
 
--   Displays a list of available SSH connections with server names
--   Supports selection using both arrow keys and number input
--   Allows searching through the list of servers
--   Executes the selected SSH command
+- Interactive selection of SSH connections with server names
+- Standard SSH config file format for easy configuration
+- Fuzzy search through server names
+- Arrow key and number-based selection
+- Exit option in the selector
+- Man page documentation
 
 ## Requirements
 
--   Go 1.21.8 or higher
--   Make (for easy installation)
--   github.com/manifoldco/promptui v0.9.0 (automatically installed when using `go mod tidy`)
+- Go 1.21.8 or higher
+- Make (for installation)
+- github.com/manifoldco/promptui v0.9.0 (automatically installed when using `go mod tidy`)
 
 ## Installation
 
-### Using Make (Recommended)
+### System-wide Installation (requires sudo)
 
-1. Clone this repository:
-    ```
-    git clone https://github.com/yourusername/sshselect.git
-    ```
-2. Change to the project directory:
-    ```
-    cd sshselect
-    ```
-3. Download dependencies and build the executable:
+```bash
+git clone https://github.com/mmarkk/sshselect.git
+cd sshselect
+make
+sudo make install
+```
 
-    ```
-    make install
-    ```
+This installs:
+- Binary to /usr/local/bin
+- Man pages to /usr/local/share/man
 
-    This will run `go mod tidy`, compile the program, and install it to `~/bin/sshselect`.
+### User-local Installation
 
-4. Ensure `~/bin` is in your PATH. Add the following line to your shell configuration file (e.g., `.bashrc`, `.zshrc`):
-    ```
-    export PATH="$HOME/bin:$PATH"
-    ```
-    Then, reload your shell configuration or restart your terminal.
+```bash
+git clone https://github.com/mmarkk/sshselect.git
+cd sshselect
+make
+make install-user
+```
 
-### Manual Installation
+This installs:
+- Binary to ~/.local/bin
+- Man pages to ~/.local/share/man
 
-1. Clone this repository:
-    ```
-    git clone https://github.com/yourusername/sshselect.git
-    ```
-2. Change to the project directory:
-    ```
-    cd sshselect
-    ```
-3. Download dependencies:
-    ```
-    go mod tidy
-    ```
-4. Build the executable:
-    ```
-    go build -o sshselect
-    ```
-5. (Optional) Move the executable to a directory in your PATH:
-    ```
-    mv sshselect ~/bin/
-    ```
+Ensure these directories are in your PATH/MANPATH:
+```bash
+# Add to your shell configuration file (e.g., .bashrc, .zshrc):
+export PATH="$HOME/.local/bin:$PATH"
+export MANPATH="$HOME/.local/share/man:$MANPATH"
+```
+
+## Configuration
+
+SSH connections are configured in `~/.config/sshselect/config` using standard SSH config format:
+
+```text
+# Example configuration
+Host webserver
+    HostName 192.168.1.100
+    User admin
+    Port 2222  # Optional, defaults to 22
+
+Host aws-instance
+    HostName ec2-1-2-3-4.compute-1.amazonaws.com
+    User ubuntu
+```
+
+The config file will be created automatically on first run with example entries.
 
 ## Usage
 
-1. Run the `sshselect` program:
-
-    ```
+1. Run the program:
+    ```bash
     sshselect
     ```
 
-    If you didn't install it to a directory in your PATH, run it using:
+2. Use the interface:
+    - Up/Down arrows to navigate
+    - Type to search server names
+    - Enter to connect
+    - Select "Exit" or press Ctrl+C to quit
 
-    ```
-    ./sshselect
-    ```
+## Documentation
 
-2. You will see a list of available SSH connections with server names. You can:
-
-    - Use the up and down arrow keys to navigate through the list
-    - Type a number to quickly select a connection
-    - Start typing to search for a specific server name
-
-3. Press Enter to confirm your selection.
-
-4. The program will execute the selected SSH command, connecting you to the chosen server.
-
-## Customization
-
-To modify the list of available SSH connections, edit the `logins` slice in the `main` function of the `sshselect.go` file. Each entry in the slice should be a `sshLogin` struct with a `Name` and `Command` field. For example:
-
-```go
-logins := []sshLogin{
-    {Name: "Web Server", Command: "ssh user@webserver.example.com"},
-    {Name: "Database", Command: "ssh dbuser@db.example.com -p 2222"},
-    // Add more entries as needed
-}
+Manual pages are available after installation:
+```bash
+man sshselect
 ```
-
-After making changes, rebuild and reinstall the program using `make install`.
 
 ## Makefile Commands
 
--   `make build`: Builds the sshselect binary
--   `make install`: Runs `go mod tidy`, builds and installs the binary to ~/bin
--   `make clean`: Removes the built binary
+- `make build`: Builds the sshselect binary
+- `make install`: System-wide installation (requires sudo)
+- `make install-user`: User-local installation
+- `make uninstall`: Remove system-wide installation
+- `make uninstall-user`: Remove user-local installation
+- `make clean`: Remove built files
 
 ## Error Handling
 
--   Invalid user input will result in an error message.
--   If there's an error executing the SSH command, the program will exit with an error message.
+- Invalid config entries will be skipped with warnings
+- SSH connection errors will be reported
+- Config file will be created if not found
 
 ## Contributing
 
@@ -120,3 +112,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+Copyright © 2025 Mark McKenzie
