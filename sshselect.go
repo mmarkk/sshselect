@@ -113,14 +113,7 @@ func parseConfig(content string) []SSHHost {
 	}
 	
 	if len(hosts) == 0 {
-		fmt.Printf("\nNo valid SSH connections found in config file.\n")
-		fmt.Printf("Each entry must have:\n")
-		fmt.Printf("  Host nickname\n")
-		fmt.Printf("      HostName <ip-or-hostname>\n")
-		fmt.Printf("      User <username>\n")
-		fmt.Printf("      Port <port>    # Optional\n")
-		fmt.Printf("\nPlease update your connections and run the program again.\n")
-		os.Exit(0)
+		return nil
 	}
 	
 	return hosts
