@@ -297,22 +297,46 @@ func main() {
 	fmt.Printf("\nConnecting to: %s\n", selectedLogin.Command)
 	sshCommand := strings.Fields(selectedLogin.Command)
 
-	// Validate command is an SSH command
-	if len(sshCommand) == 0 || sshCommand[0] != "ssh" {
-		fmt.Println("Error: Invalid SSH command")
+	// Validate and extract SSH arguments
+	if len(sshCommand) < 2 {
+		fmt.Println("Error: Invalid SSH command format")
 		os.Exit(1)
 	}
 
-	// Validate SSH arguments
-	for _, arg := range sshCommand[1:] {
-		if strings.Contains(arg, ";") || strings.Contains(arg, "&&") || strings.Contains(arg, "||") {
-			fmt.Println("Error: Invalid SSH command arguments")
-			os.Exit(1)
-		}
+	// Expect format: ssh user@host [-p port]
+	var sshArgs []string
+	userHost := sshCommand[1]
+	if !strings.Contains(userHost, "@") {
+		fmt.Println("Error: Invalid SSH command format - missing user@host")
+		os.Exit(1)
 	}
 
-	// Use explicit ssh command
-	cmd := exec.Command("ssh", sshCommand[1:]...)
+	// Split user@host and validate
+	parts := strings.Split(userHost, "@")
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		fmt.Println("Error: Invalid SSH command format - malformed user@host")
+		os.Exit(1)
+	}
+
+	// Add validated user@host
+	sshArgs = append(sshArgs, userHost)
+
+	// Handle optional port argument
+	if len(sshCommand) > 2 {
+		if len(sshCommand) != 4 || sshCommand[2] != "-p" {
+			fmt.Println("Error: Invalid SSH command format - unexpected arguments")
+			os.Exit(1)
+		}
+		// Validate port is numeric
+		if _, err := strconv.Atoi(sshCommand[3]); err != nil {
+			fmt.Println("Error: Invalid SSH command format - port must be numeric")
+			os.Exit(1)
+		}
+		sshArgs = append(sshArgs, "-p", sshCommand[3])
+	}
+
+	// Use explicit ssh command with validated arguments
+	cmd := exec.Command("ssh", sshArgs...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
