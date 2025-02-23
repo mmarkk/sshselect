@@ -235,20 +235,22 @@ func main() {
 			return true // Empty input matches everything
 		}
 
-		inputRunes := []rune(input)
-		nameRunes := []rune(name)
-		inputIndex := 0
-
-		for _, nameRune := range nameRunes {
-			if inputIndex < len(inputRunes) && nameRune == inputRunes[inputIndex] {
-				inputIndex++
+		// Use string iteration directly
+		inputIdx := 0
+		for _, r := range input {
+			found := false
+			for i := 0; i < len(name); i++ {
+				if rune(name[i]) == r {
+					found = true
+					break
+				}
 			}
-			if inputIndex == len(inputRunes) {
-				return true
+			if !found {
+				return false
 			}
+			inputIdx++
 		}
-
-		return false
+		return true
 	}
 
 	prompt := promptui.Select{

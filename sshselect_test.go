@@ -124,20 +124,22 @@ func TestSearcherWithExit(t *testing.T) {
 			return true
 		}
 
-		inputRunes := []rune(input)
-		nameRunes := []rune(name)
-		inputIndex := 0
-
-		for _, nameRune := range nameRunes {
-			if inputIndex < len(inputRunes) && nameRune == inputRunes[inputIndex] {
-				inputIndex++
+		// Use string iteration directly
+		inputIdx := 0
+		for _, r := range input {
+			found := false
+			for i := 0; i < len(name); i++ {
+				if rune(name[i]) == r {
+					found = true
+					break
+				}
 			}
-			if inputIndex == len(inputRunes) {
-				return true
+			if !found {
+				return false
 			}
+			inputIdx++
 		}
-
-		return false
+		return true
 	}
 
 	testCases := []struct {
@@ -206,22 +208,26 @@ func TestSearcher(t *testing.T) {
 			return true // Empty input matches everything
 		}
 
-		inputIndex := 0
-
-		for _, nameRune := range name {
-			fmt.Printf("Debug: Comparing '%c' with '%c'\n", nameRune, input[inputIndex])
-			if inputIndex < len(input) && nameRune == rune(input[inputIndex]) {
-				inputIndex++
-				fmt.Printf("Debug: Match found, inputIndex now %d\n", inputIndex)
+		// Use string iteration directly
+		inputIdx := 0
+		for _, r := range input {
+			found := false
+			for i := 0; i < len(name); i++ {
+				if rune(name[i]) == r {
+					found = true
+					fmt.Printf("Debug: Match found for '%c' at position %d\n", r, i)
+					break
+				}
 			}
-			if inputIndex == len(input) {
-				fmt.Printf("Debug: All input characters matched\n")
-				return true
+			if !found {
+				fmt.Printf("Debug: No match found for '%c'\n", r)
+				return false
 			}
+			inputIdx++
+			fmt.Printf("Debug: inputIdx now %d\n", inputIdx)
 		}
-
-		fmt.Printf("Debug: Not all input characters were matched\n")
-		return false
+		fmt.Printf("Debug: All input characters matched\n")
+		return true
 	}
 
 	testCases := []struct {
