@@ -4,7 +4,6 @@ SSH Select is a simple command-line tool written in Go that allows users to easi
 
 [![CI](https://github.com/mmarkk/sshselect/actions/workflows/ci.yml/badge.svg)](https://github.com/mmarkk/sshselect/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mmarkk/sshselect)](https://goreportcard.com/report/github.com/mmarkk/sshselect)
-[![codecov](https://codecov.io/gh/mmarkk/sshselect/branch/main/graph/badge.svg)](https://codecov.io/gh/mmarkk/sshselect)
 
 ## Features
 
