@@ -47,13 +47,13 @@ func createDefaultConfig(configPath string) error {
 	// Ensure directory exists
 	configDir := filepath.Dir(configPath)
 	fmt.Printf("Creating config directory: %s\n", configDir)
-	if err := os.MkdirAll(configDir, 0755); err != nil {
+	if err := os.MkdirAll(configDir, 0750); err != nil {
 		return fmt.Errorf("failed to create config directory: %v", err)
 	}
 
 	// Create config file with default content
 	fmt.Printf("Writing default config to: %s\n", configPath)
-	if err := os.WriteFile(configPath, []byte(defaultConfig), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte(defaultConfig), 0600); err != nil {
 		return fmt.Errorf("failed to write config file: %v", err)
 	}
 	fmt.Printf("Successfully created config file\n")
@@ -125,7 +125,12 @@ func loadConfig() ([]sshLogin, error) {
 		return nil, fmt.Errorf("failed to get home directory: %v", err)
 	}
 
+	// Construct and validate config path
 	configPath := filepath.Join(homeDir, ".config", "sshselect", "config")
+	expectedPrefix := filepath.Join(homeDir, ".config", "sshselect")
+	if !strings.HasPrefix(filepath.Clean(configPath), expectedPrefix) {
+		return nil, fmt.Errorf("config file must be in %s directory", expectedPrefix)
+	}
 
 	fmt.Printf("Checking config at: %s\n", configPath)
 
@@ -193,7 +198,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Construct and validate config path
 	configPath := filepath.Join(homeDir, ".config", "sshselect", "config")
+	expectedPrefix := filepath.Join(homeDir, ".config", "sshselect")
+	if !strings.HasPrefix(filepath.Clean(configPath), expectedPrefix) {
+		fmt.Printf("Error: config file must be in %s directory\n", expectedPrefix)
+		os.Exit(1)
+	}
 
 	// Check if config exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -285,7 +296,23 @@ func main() {
 
 	fmt.Printf("\nConnecting to: %s\n", selectedLogin.Command)
 	sshCommand := strings.Fields(selectedLogin.Command)
-	cmd := exec.Command(sshCommand[0], sshCommand[1:]...)
+	
+	// Validate command is an SSH command
+	if len(sshCommand) == 0 || sshCommand[0] != "ssh" {
+		fmt.Println("Error: Invalid SSH command")
+		os.Exit(1)
+	}
+
+	// Validate SSH arguments
+	for _, arg := range sshCommand[1:] {
+		if strings.Contains(arg, ";") || strings.Contains(arg, "&&") || strings.Contains(arg, "||") {
+			fmt.Println("Error: Invalid SSH command arguments")
+			os.Exit(1)
+		}
+	}
+
+	// Use explicit ssh command
+	cmd := exec.Command("ssh", sshCommand[1:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
