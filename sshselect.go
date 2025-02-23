@@ -296,7 +296,7 @@ func main() {
 
 	fmt.Printf("\nConnecting to: %s\n", selectedLogin.Command)
 	sshCommand := strings.Fields(selectedLogin.Command)
-	
+
 	// Validate command is an SSH command
 	if len(sshCommand) == 0 || sshCommand[0] != "ssh" {
 		fmt.Println("Error: Invalid SSH command")
