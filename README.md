@@ -32,6 +32,7 @@ sudo make install
 ```
 
 This installs:
+
 - Binary to /usr/local/bin
 - Man pages to /usr/local/share/man
 
@@ -45,10 +46,12 @@ make install-user
 ```
 
 This installs:
+
 - Binary to ~/.local/bin
 - Man pages to ~/.local/share/man
 
 Ensure these directories are in your PATH/MANPATH:
+
 ```bash
 # Add to your shell configuration file (e.g., .bashrc, .zshrc):
 export PATH="$HOME/.local/bin:$PATH"
@@ -76,6 +79,7 @@ The config file will be created automatically on first run with example entries.
 ## Usage
 
 1. Run the program:
+
     ```bash
     sshselect
     ```
@@ -89,6 +93,7 @@ The config file will be created automatically on first run with example entries.
 ## Documentation
 
 Manual pages are available after installation:
+
 ```bash
 man sshselect
 ```
@@ -111,6 +116,7 @@ man sshselect
 ## Security
 
 When reporting issues or sharing configurations, be mindful not to expose sensitive information:
+
 - Avoid sharing your actual SSH hostnames, IP addresses, or usernames
 - Use example domains (like example.com) or placeholder IPs (like 192.0.2.x) in examples
 - Review your config files for sensitive data before sharing
@@ -122,40 +128,6 @@ When reporting issues or sharing configurations, be mindful not to expose sensit
 - Path validation to prevent directory traversal attacks
 - Strict SSH command validation to prevent command injection
 - Detailed error messages for security-related issues
-
-### Repository Security
-
-Before making this repository public:
-
-1. Clean Git history to remove sensitive data:
-```bash
-# Create a new orphan branch
-git checkout --orphan temp_branch
-
-# Add current files
-git add .
-git commit -m "Initial commit with clean history"
-
-# Delete old main branch and rename temp_branch
-git branch -D main
-git branch -m main
-
-# Force push to remote
-git push -f origin main
-
-# Delete old branches
-git branch -r  # List remote branches
-git push origin --delete branch_name  # Delete each old branch
-
-# Clean up local references
-git gc --aggressive --prune=now
-```
-
-2. Enable code scanning:
-- Go to repository Settings > Security > Code security and analysis
-- Click "Set up" next to "CodeQL analysis"
-- Click "Enable CodeQL"
-- Remove `continue-on-error: true` from the CodeQL job in `.github/workflows/ci.yml`
 
 ## Contributing
 
