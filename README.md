@@ -116,6 +116,22 @@ When reporting issues or sharing configurations, be mindful not to expose sensit
 - Review your config files for sensitive data before sharing
 - The default config location (~/.config/sshselect/config) is local to your machine and not included in the repository
 
+### Security Features
+- Secure file permissions (0750 for directories, 0600 for config files)
+- Path validation to prevent directory traversal attacks
+- Strict SSH command validation to prevent command injection
+- Detailed error messages for security-related issues
+
+### Code Scanning
+
+This repository uses GitHub's code scanning features to maintain security:
+1. Go to repository Settings > Security > Code security and analysis
+2. Enable "Code scanning"
+3. Choose "CodeQL Analysis" as the scanning engine
+4. Configure the default CodeQL workflow
+
+This ensures automated security analysis on every push and pull request.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
