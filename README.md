@@ -124,13 +124,18 @@ When reporting issues or sharing configurations, be mindful not to expose sensit
 
 ### Code Scanning
 
-This repository uses GitHub's code scanning features to maintain security:
-1. Go to repository Settings > Security > Code security and analysis
-2. Enable "Code scanning"
-3. Choose "CodeQL Analysis" as the scanning engine
-4. Configure the default CodeQL workflow
+To enable GitHub's code scanning features:
 
-This ensures automated security analysis on every push and pull request.
+1. Make the repository public (code scanning is not available for private repositories on free plans)
+2. Go to the repository on GitHub.com
+3. Click "Settings" tab
+4. Select "Code security and analysis" from the left sidebar
+5. Find "Code scanning" section
+6. Click "Set up" next to "CodeQL analysis"
+7. Click "Enable CodeQL"
+8. After enabling, remove the `continue-on-error: true` line from the CodeQL job in `.github/workflows/ci.yml`
+
+This will enable automated security analysis on every push and pull request. The analysis helps identify potential security vulnerabilities in your code.
 
 ## Contributing
 
