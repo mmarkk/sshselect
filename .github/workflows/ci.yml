@@ -95,6 +95,19 @@ jobs:
         go-version-input: '1.21.x'
         check-latest: true
 
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    # Make CodeQL optional until it's enabled in repository settings
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v4
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
