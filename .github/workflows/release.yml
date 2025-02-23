@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  goreleaser:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          for file in sshselect_*; do
+            if [ -f "$file" ]; then
+              sha256sum "$file" >> checksums.txt
+            fi
+          done
+
+      - name: Upload checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksums
+          path: dist/checksums.txt
+
+  # Create .goreleaser.yaml if it doesn't exist
+  prepare:
+    name: Prepare Release Config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GoReleaser config
+        run: |
+          cat > .goreleaser.yaml <<EOL
+          before:
+            hooks:
+              - go mod tidy
+          
+          builds:
+            - env:
+                - CGO_ENABLED=0
+              goos:
+                - linux
+                - windows
+                - darwin
+              goarch:
+                - amd64
+                - arm64
+              ldflags:
+                - -s -w -X main.version={{.Version}}
+          
+          archives:
+            - format: tar.gz
+              name_template: >-
+                {{ .ProjectName }}_
+                {{- title .Os }}_
+                {{- if eq .Arch "amd64" }}x86_64
+                {{- else }}{{ .Arch }}{{ end }}
+              format_overrides:
+                - goos: windows
+                  format: zip
+          
+          changelog:
+            sort: asc
+            filters:
+              exclude:
+                - '^docs:'
+                - '^test:'
+                - '^ci:'
+                - Merge pull request
+                - Merge branch
+          EOL
+
+      - name: Commit GoReleaser config
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: Add GoReleaser configuration"
+          file_pattern: .goreleaser.yaml
