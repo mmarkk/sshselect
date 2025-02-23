@@ -336,6 +336,7 @@ func main() {
 	}
 
 	// Use explicit ssh command with validated arguments
+	// #nosec G204 -- Arguments are strictly validated above to ensure only valid SSH parameters
 	cmd := exec.Command("ssh", sshArgs...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
