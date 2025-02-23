@@ -234,12 +234,12 @@ func TestSearcher(t *testing.T) {
 		{"admin", 1, false},
 		{"out", 1, true},
 		{"nonexistent", 0, false},
-		{"MARK", 2, true},  // Test case-insensitivity
-		{"  mark  ", 2, true},  // Test whitespace handling
-		{"", 0, true},  // Empty string should match all
-		{"adm", 0, true},  // Partial match at the end
-		{"cp", 0, true},  // Partial match at the beginning
-		{"age", 1, true},  // Partial match in the middle
+		{"MARK", 2, true},     // Test case-insensitivity
+		{"  mark  ", 2, true}, // Test whitespace handling
+		{"", 0, true},         // Empty string should match all
+		{"adm", 0, true},      // Partial match at the end
+		{"cp", 0, true},       // Partial match at the beginning
+		{"age", 1, true},      // Partial match in the middle
 	}
 
 	for _, tc := range testCases {

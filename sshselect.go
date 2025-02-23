@@ -63,16 +63,16 @@ func createDefaultConfig(configPath string) error {
 func parseConfig(content string) []SSHHost {
 	var hosts []SSHHost
 	var currentHost *SSHHost
-	
+
 	scanner := bufio.NewScanner(strings.NewReader(content))
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		
+
 		// Skip empty lines and comments
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		
+
 		// Check if this is a Host line
 		if strings.HasPrefix(strings.ToLower(line), "host ") {
 			// Add previous host if valid
@@ -85,14 +85,14 @@ func parseConfig(content string) []SSHHost {
 			currentHost = &SSHHost{Name: hostName}
 			continue
 		}
-		
+
 		// Parse other config lines
 		if currentHost != nil {
 			parts := strings.Fields(line)
 			if len(parts) >= 2 {
 				key := strings.ToLower(parts[0])
 				value := strings.Join(parts[1:], " ")
-				
+
 				switch key {
 				case "hostname":
 					currentHost.HostName = value
@@ -104,18 +104,18 @@ func parseConfig(content string) []SSHHost {
 			}
 		}
 	}
-	
+
 	// Add the last host if valid
 	if currentHost != nil && currentHost.User != "" && currentHost.HostName != "" {
 		hosts = append(hosts, *currentHost)
 	} else if currentHost != nil {
 		fmt.Printf("\nWarning: Skipping '%s' - missing required fields (User and/or HostName)\n", currentHost.Name)
 	}
-	
+
 	if len(hosts) == 0 {
 		return nil
 	}
-	
+
 	return hosts
 }
 
@@ -126,21 +126,21 @@ func loadConfig() ([]sshLogin, error) {
 	}
 
 	configPath := filepath.Join(homeDir, ".config", "sshselect", "config")
-	
+
 	fmt.Printf("Checking config at: %s\n", configPath)
-	
+
 	// Check if config exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		fmt.Printf("Config file not found, creating...\n")
 		if err := createDefaultConfig(configPath); err != nil {
 			return nil, fmt.Errorf("failed to create default config: %v", err)
 		}
-		
+
 		// Verify the file was created
 		if _, err := os.Stat(configPath); err != nil {
 			return nil, fmt.Errorf("failed to verify config file creation: %v", err)
 		}
-		
+
 		fmt.Printf("\nCreated default config file at: %s\nPlease add your SSH connections and run the program again.\n", configPath)
 		return nil, fmt.Errorf("new config file created")
 	} else {
@@ -155,7 +155,7 @@ func loadConfig() ([]sshLogin, error) {
 
 	// Parse hosts from config
 	hosts := parseConfig(string(content))
-	
+
 	// Convert to sshLogin format
 	var logins []sshLogin
 	for _, host := range hosts {
@@ -194,7 +194,7 @@ func main() {
 	}
 
 	configPath := filepath.Join(homeDir, ".config", "sshselect", "config")
-	
+
 	// Check if config exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		fmt.Printf("Config file not found, creating at: %s\n", configPath)
