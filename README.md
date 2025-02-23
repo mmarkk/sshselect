@@ -105,6 +105,14 @@ man sshselect
 - SSH connection errors will be reported
 - Config file will be created if not found
 
+## Security
+
+When reporting issues or sharing configurations, be mindful not to expose sensitive information:
+- Avoid sharing your actual SSH hostnames, IP addresses, or usernames
+- Use example domains (like example.com) or placeholder IPs (like 192.0.2.x) in examples
+- Review your config files for sensitive data before sharing
+- The default config location (~/.config/sshselect/config) is local to your machine and not included in the repository
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
