@@ -30,8 +30,8 @@ func TestConfigFileCreation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to stat config file: %v", err)
 	}
-	if info.Mode().Perm() != 0644 {
-		t.Errorf("Config file has wrong permissions: got %v, want %v", info.Mode().Perm(), 0644)
+	if info.Mode().Perm() != 0600 {
+		t.Errorf("Config file has wrong permissions: got %v, want %v", info.Mode().Perm(), 0600)
 	}
 
 	// Check file content
