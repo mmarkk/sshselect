@@ -1,0 +1,100 @@
+.TH SSHSELECT 1 "February 2025" "Version 1.0" "User Commands"
+
+.SH NAME
+sshselect \- interactive SSH connection selector
+
+.SH SYNOPSIS
+.B sshselect
+
+.SH DESCRIPTION
+.B sshselect
+provides an interactive terminal interface for selecting and connecting to SSH hosts. It reads host configurations from a config file and presents them in a searchable list, allowing quick selection and connection to the desired host.
+
+.SH CONFIGURATION
+The configuration file is located at
+.I ~/.config/sshselect/config
+and follows the standard SSH config format. If the file doesn't exist, a template will be created automatically.
+
+.SS Format
+Each SSH connection entry in the config file should follow this format:
+.PP
+.nf
+.RS
+Host nickname
+    HostName hostname
+    User username
+    Port portnumber    # Optional, defaults to 22
+.RE
+.fi
+
+.SH INTERFACE
+.PP
+The program presents an interactive list of configured SSH connections. You can:
+.IP \[bu] 2
+Use arrow keys (↑/↓) to navigate the list
+.IP \[bu]
+Type to search for a connection
+.IP \[bu]
+Press Enter to connect to the selected host
+.IP \[bu]
+Press Ctrl+C or select "Exit" to quit
+
+.SH FILES
+.TP
+.I ~/.config/sshselect/config
+The configuration file containing SSH connection entries.
+
+.SH EXAMPLES
+Example configuration entries:
+.PP
+.nf
+.RS
+Host webserver
+    HostName 192.168.1.100
+    User admin
+    Port 2222
+
+Host aws-instance
+    HostName ec2-1-2-3-4.compute-1.amazonaws.com
+    User ubuntu
+.RE
+.fi
+
+.SH EXIT STATUS
+.TP
+.B 0
+Successful program execution
+.TP
+.B 1
+Various error conditions (config file issues, SSH connection failures)
+
+.SH BUGS
+Report bugs to: https://github.com/mmarkk/sshselect/issues
+
+.SH AUTHOR
+Written by Mark McKenzie.
+
+.SH COPYRIGHT
+Copyright \(co 2025 Mark McKenzie
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+.SH SEE ALSO
+.BR ssh (1),
+.BR ssh_config (5)
