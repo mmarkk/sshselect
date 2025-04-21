@@ -9,7 +9,6 @@ SSH Select is a simple command-line tool written in Go that allows users to easi
 
 - Interactive selection of SSH connections with server names
 - Standard SSH config file format for easy configuration
-- Fuzzy search through server names
 - Arrow key and number-based selection
 - Exit option in the selector
 - Man page documentation
