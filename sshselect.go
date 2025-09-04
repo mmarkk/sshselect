@@ -246,20 +246,22 @@ func main() {
 			return true // Empty input matches everything
 		}
 
-		// Use string iteration directly
-		inputIdx := 0
-		for _, r := range input {
+		// Fuzzy search: characters must appear in sequence
+		nameIdx := 0
+		for _, inputChar := range input {
 			found := false
-			for i := 0; i < len(name); i++ {
-				if rune(name[i]) == r {
+			// Look for the character starting from current position in name
+			for nameIdx < len(name) {
+				if rune(name[nameIdx]) == inputChar {
 					found = true
+					nameIdx++ // Move to next position for next character
 					break
 				}
+				nameIdx++
 			}
 			if !found {
 				return false
 			}
-			inputIdx++
 		}
 		return true
 	}
@@ -275,12 +277,12 @@ func main() {
 	index, _, err := prompt.Run()
 
 	if err != nil {
-		if err.Error() == "^C" {
+		if err.Error() == "^C" || err.Error() == "^D" {
 			fmt.Println("\nOperation cancelled")
 			return
 		}
 		// Check if the input is a valid number
-		if num, err := strconv.Atoi(err.Error()); err == nil && num > 0 && num <= len(logins) {
+		if num, parseErr := strconv.Atoi(err.Error()); parseErr == nil && num > 0 && num <= len(logins) {
 			index = num - 1
 		} else {
 			fmt.Printf("Error: %v\n", err)
