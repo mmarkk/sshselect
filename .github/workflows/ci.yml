@@ -13,7 +13,7 @@ jobs:
         strategy:
             matrix:
                 os: [ubuntu-latest, macos-latest]
-                go: ["1.21.x", "1.22.x"]
+                go: ["1.23.x", "1.24.x"]
 
         steps:
             - uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
             - name: Set up Go
               uses: actions/setup-go@v5
               with:
-                  go-version: "1.21.x"
+                  go-version: "1.24.x"
                   cache: true
 
             - name: Check formatting
@@ -81,7 +81,7 @@ jobs:
             - name: Set up Go
               uses: actions/setup-go@v5
               with:
-                  go-version: "1.21.x"
+                  go-version: "1.24.x"
                   cache: true
 
             - name: Run Gosec Security Scanner
@@ -92,25 +92,6 @@ jobs:
             - name: Run govulncheck
               uses: golang/govulncheck-action@v1
               with:
-                  go-version-input: "1.21.x"
+                  go-version-input: "1.24.x"
                   check-latest: true
 
-    codeql:
-        name: CodeQL Analysis
-        runs-on: ubuntu-latest
-        permissions:
-            security-events: write
-            actions: read
-            contents: read
-        # Make CodeQL optional until it's enabled in repository settings
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Initialize CodeQL
-              uses: github/codeql-action/init@v3
-              with:
-                  languages: go
-
-            - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v3

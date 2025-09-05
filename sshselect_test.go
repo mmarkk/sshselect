@@ -124,20 +124,22 @@ func TestSearcherWithExit(t *testing.T) {
 			return true
 		}
 
-		// Use string iteration directly
-		inputIdx := 0
-		for _, r := range input {
+		// Fuzzy search: characters must appear in sequence
+		nameIdx := 0
+		for _, inputChar := range input {
 			found := false
-			for i := 0; i < len(name); i++ {
-				if rune(name[i]) == r {
+			// Look for the character starting from current position in name
+			for nameIdx < len(name) {
+				if rune(name[nameIdx]) == inputChar {
 					found = true
+					nameIdx++ // Move to next position for next character
 					break
 				}
+				nameIdx++
 			}
 			if !found {
 				return false
 			}
-			inputIdx++
 		}
 		return true
 	}
@@ -208,25 +210,27 @@ func TestSearcher(t *testing.T) {
 			return true // Empty input matches everything
 		}
 
-		// Use string iteration directly
-		inputIdx := 0
-		for _, r := range input {
+		// Fuzzy search: characters must appear in sequence
+		nameIdx := 0
+		for _, inputChar := range input {
 			found := false
-			for i := 0; i < len(name); i++ {
-				if rune(name[i]) == r {
+			// Look for the character starting from current position in name
+			for nameIdx < len(name) {
+				if rune(name[nameIdx]) == inputChar {
 					found = true
-					fmt.Printf("Debug: Match found for '%c' at position %d\n", r, i)
+					fmt.Printf("Debug: Match found for '%c' at position %d\n", inputChar, nameIdx)
+					nameIdx++ // Move to next position for next character
 					break
 				}
+				nameIdx++
 			}
 			if !found {
-				fmt.Printf("Debug: No match found for '%c'\n", r)
+				fmt.Printf("Debug: No match found for '%c'\n", inputChar)
 				return false
 			}
-			inputIdx++
-			fmt.Printf("Debug: inputIdx now %d\n", inputIdx)
+			fmt.Printf("Debug: nameIdx now %d\n", nameIdx)
 		}
-		fmt.Printf("Debug: All input characters matched\n")
+		fmt.Printf("Debug: All input characters matched sequentially\n")
 		return true
 	}
 
